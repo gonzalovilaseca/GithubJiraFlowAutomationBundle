@@ -1,5 +1,5 @@
 {
-  "name": "Github/Jira flow automation bundle",
+  "name": "gvf/github-jira-flow-automation-bundle",
   "type": "symfony-bundle",
   "license": "proprietary",
   "require": {
