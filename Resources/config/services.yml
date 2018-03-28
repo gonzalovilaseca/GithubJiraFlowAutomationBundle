@@ -1,0 +1,97 @@
+services:
+    Gvf\Bundle\FlowAutomationBundle\Controller\GithubController:
+        arguments:
+            - '@Gvf\Bundle\FlowAutomationBundle\Github\GithubHandler'
+            - '@Gvf\Bundle\FlowAutomationBundle\Github\GithubRequestValidator'
+            - '@logger'
+
+    # @todo move to tagged services
+    Gvf\Bundle\FlowAutomationBundle\Github\GithubHandler:
+
+    Gvf\Bundle\FlowAutomationBundle\Github\PayloadHashCalculator:
+        public: true
+        arguments:
+            - '%github.secret%'
+
+    Gvf\Bundle\FlowAutomationBundle\Github\GithubRequestValidator:
+        arguments:
+            - '@Gvf\Bundle\FlowAutomationBundle\Github\PayloadHashCalculator'
+
+    Github\Api\Issue:
+        tags: [test_double]
+
+    Github\Api\Issue\Labels:
+        tags: [test_double]
+
+    Gvf\Bundle\FlowAutomationBundle\Jira\Handler\CommentAdder:
+        tags: [test_double]
+
+    Gvf\Bundle\FlowAutomationBundle\Github\Deciders\LabelAddedDecider:
+        tags:
+            - { name: automation.decider, alias: label-added }
+
+    Gvf\Bundle\FlowAutomationBundle\Github\Deciders\BranchCreatedDecider:
+        tags:
+            - { name: automation.decider, alias: branch-created }
+
+    Gvf\Bundle\FlowAutomationBundle\Github\Deciders\PullRequestApprovedDecider:
+        tags:
+            - { name: automation.decider, alias: pr-approved }
+
+    Gvf\Bundle\FlowAutomationBundle\Github\Deciders\PullRequestChangesRequestedDecider:
+        tags:
+            - { name: automation.decider, alias: pr-changes-requested }
+
+    Gvf\Bundle\FlowAutomationBundle\Github\Deciders\PullRequestOpenedDecider:
+        tags:
+            - { name: automation.decider, alias: pr-created }
+
+    Gvf\Bundle\FlowAutomationBundle\Jira\Handler\Transitioner:
+        arguments:
+            - '@logger'
+        tags:
+            - { name: automation.action, alias: jira-transition, method: transition }
+            - test_double
+
+    jira_label_adder:
+        class: Gvf\Bundle\FlowAutomationBundle\Jira\Handler\Label\LabelAdder
+        tags:
+            - { name: automation.action, alias: jira-add-label, method: addLabel }
+            - test_double
+
+    jira_label_clearer:
+        class: Gvf\Bundle\FlowAutomationBundle\Jira\Handler\Label\LabelAdder
+        tags:
+            - { name: automation.action, alias: jira-clear-labels, method: clear }
+
+    gh_label_replacer:
+        class: Gvf\Bundle\FlowAutomationBundle\Github\Actions\PrLabel
+        arguments:
+            - '@Github\Client'
+            - '%github.username%'
+            - '%github.repository%'
+        tags:
+            - { name: automation.action, alias: github-replace-labels, method: replaceLabels }
+            - test_double
+
+    gh_label_adder:
+        class: Gvf\Bundle\FlowAutomationBundle\Github\Actions\PrLabel
+        arguments:
+            - '@Github\Client'
+            - '%github.username%'
+            - '%github.repository%'
+        tags:
+            - { name: automation.action, alias: github-add-label, method: addLabel }
+            - test_double
+
+    Gvf\Bundle\FlowAutomationBundle\Parameter\Resolvers\JiraIssueResolver:
+        tags:
+            - { name: automation.resolver, parameterName: jiraIssueNumber }
+
+    Gvf\Bundle\FlowAutomationBundle\Parameter\Resolvers\DtoResolver:
+        tags:
+            - { name: automation.resolver, parameterName: dto }
+
+    Gvf\Bundle\FlowAutomationBundle\Parameter\Resolvers\GithubPrNumberResolver:
+        tags:
+            - { name: automation.resolver, parameterName: githubPrNumber }

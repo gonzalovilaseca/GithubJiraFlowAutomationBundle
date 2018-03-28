@@ -1,0 +1,4 @@
+flow_automation_index:
+    path: /
+    methods: [POST]
+    controller: Gvf\Bundle\FlowAutomationBundle\Controller\GithubController::pullRequestAction

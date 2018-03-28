@@ -1,0 +1,22 @@
+default:
+    suites:
+        github:
+            contexts:
+                - GithubContext:
+                    - '@Gvf\Bundle\FlowAutomationBundle\Github\PayloadHashCalculator'
+                    @todo change
+                    - '%%kernel.project_dir%%/features/files'
+            filters:
+                tags: "@github"
+    extensions:
+        Behat\MinkExtension:
+            base_url: http://jira.test/index_test.php
+            show_auto: false
+            sessions:
+                default:
+                    symfony2: ~
+
+        Behat\Symfony2Extension:
+            kernel:
+                bootstrap: features/bootstrap/bootstrap.php
+                class: App\Kernel
